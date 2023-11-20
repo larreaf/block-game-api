@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173"
+    origin: process.env.CORS_ORIGIN
 }))
 
 app.get('/ranking', async (req, res) => {
