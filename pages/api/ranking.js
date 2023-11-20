@@ -25,14 +25,14 @@ const getRanking = async (req, res) => {
     res.json(ranking);
 }
 
-const postRanking = async (req, res) => {
-    const name = req.body['name']
-
-    const score = req.body['score']
-
-    const timestamp = Date.now();
+const postRanking = async (req, res) => {    
+    const body = JSON.parse(req.body)
     
-    console.log({name, score, timestamp})
+    const name = body['name']
+
+    const score = body['score']
+
+    const timestamp = Date.now();    
 
     const response = await fetch(`${process.env.KV_REST_API_URL}/multi-exec`, {
         headers: {
@@ -52,24 +52,19 @@ const postRanking = async (req, res) => {
     
     const result = await response.json();
     
-    console.log({response})
-    console.log({result})
-    // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
-    // const {result: result1} = result[0]
-    // console.log({response})
-    // console.log({result})
+    const {result: result1} = result[0]
+    
+    if(result1 === 1){
+        res.statusCode = 201
+        res.json({name, score, success: Boolean(result1)})
+        return
+    }
 
-    // if(result1 === 1){
-    //     res.statusCode = 201
-    //     res.json({name, score, success: Boolean(result1)})
-    //     return
-    // }
+    // res.statusCode = 201
+    // res.json({name, score, response})
 
-    res.statusCode = 201
-    res.json({name, score, response})
-
-    // res.statusCode = 505
-    // res.json({error: "An error occured", success: false})
+    res.statusCode = 505
+    res.json({error: "An error occured", success: false})
 }
 
 const methods = {
