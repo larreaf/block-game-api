@@ -32,6 +32,8 @@ const postRanking = async (req, res) => {
 
     const timestamp = Date.now();
     
+    console.log({name, score, timestamp})
+
     const response = await fetch(`${process.env.KV_REST_API_URL}/multi-exec`, {
         headers: {
             Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
@@ -47,9 +49,11 @@ const postRanking = async (req, res) => {
     
     cacheExpire('ranking');
     cacheExpire('gamesPlayed');
-
-    // const result = await response.json();
     
+    const result = await response.json();
+    
+    console.log({response})
+    console.log({result})
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
     // const {result: result1} = result[0]
     // console.log({response})
