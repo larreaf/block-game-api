@@ -51,18 +51,21 @@ const postRanking = async (req, res) => {
     const result = await response.json();
     
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
-    const {result: result1} = result[0]
+    // const {result: result1} = result[0]
     console.log({response})
     console.log({result})
 
-    if(result1 === 1){
-        res.statusCode = 201
-        res.json({name, score, success: Boolean(result1)})
-        return
-    }
+    // if(result1 === 1){
+    //     res.statusCode = 201
+    //     res.json({name, score, success: Boolean(result1)})
+    //     return
+    // }
 
-    res.statusCode = 505
-    res.json({error: "An error occured", success: false})
+    res.statusCode = 201
+    res.json({name, score, result})
+
+    // res.statusCode = 505
+    // res.json({error: "An error occured", success: false})
 }
 
 const methods = {
