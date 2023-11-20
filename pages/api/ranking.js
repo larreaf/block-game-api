@@ -36,8 +36,8 @@ const postRanking = async (req, res) => {
         headers: {
             Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
         },
-        // ZADD ranking score name
-        // HGET sessionData userEmail
+        // ZADD ranking score name:timestamp
+        // PFADD gamesPlayed name:timestamp
         body: `[
           ["ZADD", "ranking", "${score}", "${name}:${timestamp}"],
           ["PFADD", "gamesPlayed", "${name}:${timestamp}"]
@@ -48,12 +48,12 @@ const postRanking = async (req, res) => {
     cacheExpire('ranking');
     cacheExpire('gamesPlayed');
 
-    const result = await response.json();
+    // const result = await response.json();
     
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
     // const {result: result1} = result[0]
-    console.log({response})
-    console.log({result})
+    // console.log({response})
+    // console.log({result})
 
     // if(result1 === 1){
     //     res.statusCode = 201
@@ -62,7 +62,7 @@ const postRanking = async (req, res) => {
     // }
 
     res.statusCode = 201
-    res.json({name, score, result})
+    res.json({name, score, response})
 
     // res.statusCode = 505
     // res.json({error: "An error occured", success: false})
