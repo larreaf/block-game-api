@@ -32,7 +32,7 @@ const postRanking = async (req, res) => {
 
     const timestamp = Date.now();
     
-    const result = await fetch(`${process.env.KV_REST_API_URL}/multi-exec`, {
+    const response = await fetch(`${process.env.KV_REST_API_URL}/multi-exec`, {
         headers: {
             Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
         },
@@ -47,11 +47,19 @@ const postRanking = async (req, res) => {
     
     cacheExpire('ranking');
     cacheExpire('gamesPlayed');
+    
+    const result = await response.json();
 
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
+    const {result: result1} = result[0]
+    if(result1 === 1){
+        res.statusCode = 201
+        res.json({name, score, success: Boolean(result1)})
+        return
+    }
 
-    res.statusCode = 201
-    res.json()
+    res.statusCode = 505
+    res.json({error: "An error occured", success: false})
 }
 
 const methods = {
