@@ -21,11 +21,13 @@ app.use(cors({
     origin: process.env.CORS_ORIGIN
 }))
 
-app.get('/ranking', async (req, res) => {
+app.get('/api/ranking', async (req, res) => {
     const ranking = await get_top10_ranking();
     res.send(ranking);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${app.get('port')}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server listening on port ${app.get('port')}`);
+// });
+
+module.exports = app
