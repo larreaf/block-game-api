@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     }
 
     res.statusCode = 200;
-    res.setHeader("Access-Control-Allow-Origin", "https://block-game-kappa.vercel.app/");
+    res.setHeader("Access-Control-Allow-Origin", "https://block-game-kappa.vercel.app");
     res.setHeader('Content-Type', 'application/json');
     res.json(ranking);
 }
