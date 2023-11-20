@@ -1,5 +1,26 @@
 import { createClient } from '@vercel/kv';
 
+function getCORSHeaderOrigin($allowed, $input)
+{
+    if ($allowed == '*') {
+        return '*';
+    }
+
+    $allowed = preg_quote($allowed, '/');
+
+    if (($wildcardPos = strpos($allowed, '*')) !== false) {
+        $allowed = str_replace('*', '(.*)', $allowed);
+    }
+
+    $regexp = '/^' . $allowed . '$/';
+
+    if (!preg_match($regexp, $input, $matches)) {
+        return 'none';
+    }
+
+    return $input;
+}
+
 export default async function handler(req, res) {
     const blockGameRedis = createClient({
         url: process.env.KV_REST_API_URL,
@@ -17,7 +38,7 @@ export default async function handler(req, res) {
     }
 
     res.statusCode = 200;
-    res.setHeader("Access-Control-Allow-Origin", "https://*.vercel.app");
+    res.setHeader("Access-Control-Allow-Origin", getCORSHeaderOrigin('https://*.vercel.app', req.headers['Origin']));
     res.setHeader('Content-Type', 'application/json');
     res.json(ranking);
 }
