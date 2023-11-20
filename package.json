@@ -1,25 +1,12 @@
 {
-  "name": "block-game-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
   "scripts": {
-    "dev": "nodemon api/index.js",
-    "prod": "node api/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^3.0.1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@vercel/kv": "^1.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "morgan": "^1.10.0"
+    "next": "^14.0.3"
   }
 }
