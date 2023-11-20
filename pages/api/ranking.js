@@ -2,12 +2,11 @@ import fetchCached from '../../fetchCached.js'
 import { cacheGet, cacheSet, cacheExpire } from '../../customCache.js'
 
 const getRanking = async (req, res) => {
-
     const { result: rankingArray } = await fetchCached(`${process.env.KV_REST_API_URL}/ZRANGE/ranking/0/9/WITHSCORES/REV`, {
         headers: {
             Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
         },
-        cache: { expiration: 3600, tags: 'ranking' }
+        cache: { expiration: 3600, tag: 'ranking' }
     });
 
     // const { result: rankingArray } = await fetchResponse.json();
@@ -32,7 +31,7 @@ const postRanking = async (req, res) => {
     const score = req.body['score']
 
     const timestamp = Date.now();
-
+    
     const result = await fetch(`${process.env.KV_REST_API_URL}/multi-exec`, {
         headers: {
             Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
@@ -45,10 +44,10 @@ const postRanking = async (req, res) => {
         ]`,
         method: 'POST',
     });
-
+    
     cacheExpire('ranking');
     cacheExpire('gamesPlayed');
-
+    
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
 
     res.statusCode = 201
