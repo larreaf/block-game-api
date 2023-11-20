@@ -1,7 +1,10 @@
 import express from 'express';
+import cors from 'cors';
 import morgan from 'morgan';
-import { kv } from '@vercel/kv';
-import getValues from './create-client.js';
+import get_top10_ranking from './ranking.js';
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 const PORT = process.env.PORT || 3000
 
@@ -14,8 +17,14 @@ app.set('json spaces', 2)
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:5173"
+}))
 
-app.get('/', () => getValues())
+app.get('/ranking', async (req, res) => {
+    const ranking = await get_top10_ranking();
+    res.send(ranking);
+});
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${app.get('port')}`);
