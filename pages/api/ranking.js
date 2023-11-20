@@ -1,13 +1,16 @@
-import { createClient } from '@vercel/kv';
-
+import fetchCached from '../../fetchCached.js'
+import { cacheGet, cacheSet, cacheExpire } from '../../customCache.js'
 
 const getRanking = async (req, res) => {
-    const blockGameRedis = createClient({
-        url: process.env.KV_REST_API_URL,
-        token: process.env.KV_REST_API_TOKEN,
+
+    const { result: rankingArray } = await fetchCached(`${process.env.KV_REST_API_URL}/ZRANGE/ranking/0/9/WITHSCORES/REV`, {
+        headers: {
+            Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+        },
+        cache: { expiration: 3600, tags: 'ranking' }
     });
 
-    const rankingArray = await blockGameRedis.zrange('ranking', 0, 9, { withScores: true, rev: true });
+    // const { result: rankingArray } = await fetchResponse.json();
 
     const ranking = []
 
@@ -24,18 +27,29 @@ const getRanking = async (req, res) => {
 }
 
 const postRanking = async (req, res) => {
-    const blockGameRedis = createClient({
-        url: process.env.KV_REST_API_URL,
-        token: process.env.KV_REST_API_TOKEN,
-    });
-    console.log(req.body)
-    // const body = JSON.parse(req.body);
-
     const name = req.body['name']
 
     const score = req.body['score']
 
-    const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
+    const timestamp = Date.now();
+
+    const result = await fetch(`${process.env.KV_REST_API_URL}/multi-exec`, {
+        headers: {
+            Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+        },
+        // ZADD ranking score name
+        // HGET sessionData userEmail
+        body: `[
+          ["ZADD", "ranking", "${score}", "${name}"],
+          ["PFADD", "gamesPlayed", "${name}:${timestamp}"]
+        ]`,
+        method: 'POST',
+    });
+
+    cacheExpire('ranking');
+    cacheExpire('gamesPlayed');
+
+    // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
 
     res.statusCode = 201
     res.json()
@@ -46,7 +60,7 @@ const methods = {
     'POST': postRanking
 }
 
-export default async function handler(req, res) {
+export default async function handler(req, res) {    
     const methodHandler = methods[req.method]
 
     if (methodHandler === null || typeof (methodHandler) === 'undefined') {
