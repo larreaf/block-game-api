@@ -14,7 +14,7 @@ const getRanking = async (req, res) => {
     const ranking = []
 
     for (let i = 0; i < rankingArray.length; i += 2) {
-        const name = rankingArray[i];
+        const name = rankingArray[i].slice(0, rankingArray[i].indexOf(':'));
         const score = rankingArray[i + 1];
         ranking.push({ name, score });
     }
@@ -39,7 +39,7 @@ const postRanking = async (req, res) => {
         // ZADD ranking score name
         // HGET sessionData userEmail
         body: `[
-          ["ZADD", "ranking", "${score}", "${name}"],
+          ["ZADD", "ranking", "${score}", "${name}:${timestamp}"],
           ["PFADD", "gamesPlayed", "${name}:${timestamp}"]
         ]`,
         method: 'POST',
@@ -47,7 +47,7 @@ const postRanking = async (req, res) => {
     
     cacheExpire('ranking');
     cacheExpire('gamesPlayed');
-    
+
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
 
     res.statusCode = 201
