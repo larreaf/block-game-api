@@ -47,11 +47,14 @@ const postRanking = async (req, res) => {
     
     cacheExpire('ranking');
     cacheExpire('gamesPlayed');
-    
-    const result = await response.json();
 
+    const result = await response.json();
+    
     // const result = await blockGameRedis.zadd('ranking', { score: score, member: name })
     const {result: result1} = result[0]
+    
+    res.setHeader("Access-Control-Allow-Origin", "https://block-game-kappa.vercel.app");
+
     if(result1 === 1){
         res.statusCode = 201
         res.json({name, score, success: Boolean(result1)})
